@@ -58,18 +58,13 @@ jobs:
           no-cache: true
           tags: ai381-lab2:scan
 
-      - name: Update vulnerable Python packages
+      - name: Verify packages in final image
         run: |
-          docker run --user 0 --entrypoint python ai381-lab2:scan -m pip install --no-cache-dir --upgrade "msgpack>=1.2.3" "setuptools>=78.1.1" "urllib3>=2.8.0"
-          docker commit $(docker create ai381-lab2:scan) ai381-lab2:scan-updated
-          docker tag ai381-lab2:scan-updated ai381-lab2:scan
-
-      - name: Verify Python package versions
-        run: |
-          docker run --rm --entrypoint python ai381-lab2:scan -c "import msgpack, setuptools, urllib3; print('msgpack:', msgpack.__version__); print('setuptools:', setuptools.__version__); print('urllib3:', urllib3.__version__)"
+          docker run --rm --entrypoint /opt/venv/bin/python ai381-lab2:scan -c "import msgpack, setuptools, urllib3; print('msgpack:', msgpack.__version__); print('setuptools:', setuptools.__version__); print('urllib3:', urllib3.__version__)"
+          docker run --rm --entrypoint /opt/venv/bin/python ai381-lab2:scan -m pip check
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: ai381-lab2:scan
           format: table
@@ -85,9 +80,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/ai381-lab2:${{ github.sha }}
+      - name: Push scanned image to GHCR
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/ai381-lab2:${{ github.sha }}
+        run: |
+          docker tag ai381-lab2:scan "$IMAGE"
+          docker push "$IMAGE"
