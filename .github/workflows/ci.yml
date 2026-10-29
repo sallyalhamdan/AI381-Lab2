@@ -1,5 +1,3 @@
-
-
 name: CI
 
 on:
@@ -57,7 +55,18 @@ jobs:
         with:
           context: .
           load: true
+          no-cache: true
           tags: ai381-lab2:scan
+
+      - name: Update vulnerable Python packages
+        run: |
+          docker run --user 0 --entrypoint python ai381-lab2:scan -m pip install --no-cache-dir --upgrade "msgpack>=1.2.3" "setuptools>=78.1.1" "urllib3>=2.8.0"
+          docker commit $(docker create ai381-lab2:scan) ai381-lab2:scan-updated
+          docker tag ai381-lab2:scan-updated ai381-lab2:scan
+
+      - name: Verify Python package versions
+        run: |
+          docker run --rm --entrypoint python ai381-lab2:scan -c "import msgpack, setuptools, urllib3; print('msgpack:', msgpack.__version__); print('setuptools:', setuptools.__version__); print('urllib3:', urllib3.__version__)"
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
