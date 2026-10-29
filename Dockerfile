@@ -8,7 +8,11 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 WORKDIR /build
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --upgrade \
+       "msgpack>=1.2.3" \
+       "setuptools>=78.1.1" \
+       "urllib3>=2.8.0"
 
 # Runtime stage
 FROM python:3.13-slim AS runtime
