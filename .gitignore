@@ -1,0 +1,6 @@
+.venv/
+.venv_new/
+.venv-1/
+pycache/
+*.pyc
+.pytest_cache/
