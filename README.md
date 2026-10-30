@@ -1,42 +1,149 @@
-# AI381 Lab 1 · The Manual Pipeline Race (starter kit)
+# AI381 Lab 2 – Machine Learning Operations
 
-Dr. Tariq Al-Omari · AI381 Machine Learning Operations · JUST · Fall 2026/27
+**Course:** AI381 – Machine Learning Operations  
+**Instructor:** Dr. Tariq Al-Omari  
+**University:** Jordan University of Science and Technology (JUST)  
+**Semester:** Fall 2026/27
 
-Lab 1 is short, a little chaotic, and on purpose. You will deliver a model by hand, change it, and
-log what that costs you. There is no wrong result: an honest pain log is a great pain log.
+[![CI](https://github.com/sallyalhamdan/AI381-Lab2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sallyalhamdan/AI381-Lab2/actions/workflows/ci.yml)
 
-## What is in this kit
+## Project Overview
 
-| File | What it is |
-|---|---|
-| `churn_v1.csv` | Customer churn data, version 1 (1,200 customers) |
-| `churn_v2.csv` | Version 2 of the same data. Something changed. You will find out in Twist 1 |
-| `lab1_baseline.ipynb` | The notebook that trains a logistic regression and saves `model.joblib` |
-| `app/main.py` | A small FastAPI service that loads `model.joblib` and serves `/predict` |
-| `sample_request.json` | One customer to send to the API |
-| `requirements.txt` | The packages the notebook author remembered to write down |
-| `pain_log_template.txt` | Copy it to `pain_log.txt` and fill it in as you go |
+This project demonstrates an end-to-end Machine Learning Operations (MLOps) workflow. It packages a machine learning model behind a FastAPI service, validates the API using automated tests, containerizes the application with Docker, and automates quality checks and image publishing using GitHub Actions.
 
-## The race (start your stopwatch first)
+## Technologies Used
 
-1. **Round 1.** Run the notebook with `churn_v1.csv`. Start the API by hand:
-   `uvicorn app.main:app --port 8000`
-   Send three predictions with curl, changing the values each time:
-   `curl -X POST localhost:8000/predict -H "Content-Type: application/json" -d @sample_request.json`
-2. **Twist 1.** Change the notebook to `churn_v2.csv`, retrain and redeploy. Find and fix what breaks.
-3. **Twist 2.** Create a brand-new virtual environment (or a Codespace) and rebuild everything using only your own notes.
-4. **Twist 3.** Answer: "Which model version is your API serving right now?" and explain why it is hard to prove.
-5. Finish `pain_log.txt`: minutes per step, every failure, every unanswered question.
+- Python 3.13
+- FastAPI and Uvicorn
+- Scikit-learn, Pandas, and Joblib
+- Pytest for automated testing
+- Ruff for code linting
+- Docker with a multi-stage build
+- GitHub Actions for CI/CD
+- Trivy for container vulnerability scanning
+- GitHub Container Registry (GHCR) for Docker image publishing
 
-## Setup
+## Project Structure
 
-- Python 3.11 or newer and a terminal. On Windows, use WSL2 with Ubuntu.
-- `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+```text
+AI381-Lab2/
+├── app/
+│   └── main.py
+├── src/
+├── tests/
+├── model.joblib
+├── requirements.txt
+├── Dockerfile
+└── README.md
+```
 
-## Turning it in
+## Installation and Local Setup
 
-Record one 5–8 minute video with your face and voice, say each checkpoint aloud, and turn it in on the
-**Lab 1** assignment in the **AI381 MLOPs** team on Microsoft Teams (Lab Submissions channel, Assignments tab).
-The full instructions, checkpoints and rubric are on e-learning and on the Teams assignment.
+Clone the repository:
 
-Questions: Thursday online office hours on Teams, the Lab Submissions channel, or talomari@just.edu.jo.
+```bash
+git clone https://github.com/sallyalhamdan/AI381-Lab2.git
+cd AI381-Lab2
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+pip install pytest ruff
+```
+
+## Run the Application
+
+Start the FastAPI service with one command:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+The API will be available at:
+
+- **Health Check:** http://localhost:8000/health
+- **API Documentation:** http://localhost:8000/docs
+- **Prediction Endpoint:** http://localhost:8000/predict
+
+## Automated Tests
+
+The project includes five automated tests using Pytest:
+
+1. **Health Endpoint Test:** Verifies that `/health` returns HTTP 200 and the expected status.
+2. **Prediction Endpoint Test:** Checks that `/predict` accepts valid customer data and returns a churn probability.
+3. **Probability Range Test:** Ensures the predicted probability is between 0 and 1.
+4. **Deterministic Prediction Test:** Verifies that identical inputs produce identical predictions.
+5. **Invalid Input Test:** Checks that invalid input is rejected by the API.
+
+Run the tests:
+
+```bash
+pytest -v
+```
+
+Run code quality checks:
+
+```bash
+ruff check src
+```
+
+## Docker
+
+Build the Docker image:
+
+```bash
+docker build -t ai381-lab2 .
+```
+
+Run the container:
+
+```bash
+docker run -d --name ai381-lab2-container -p 8000:8000 ai381-lab2
+```
+
+The Docker image uses a multi-stage build, runs the application as a non-root user, and includes a health check for the `/health` endpoint.
+
+## CI/CD Pipeline
+
+GitHub Actions automatically runs linting and automated tests on pushes and pull requests targeting the `main` branch.
+
+When changes are pushed to `main`, the workflow:
+
+1. Runs linting and automated tests.
+2. Builds the Docker image.
+3. Scans the image for vulnerabilities using Trivy.
+4. Publishes the Docker image to GitHub Container Registry (GHCR), tagged with the Git commit SHA.
+
+All third-party GitHub Actions are pinned to full commit SHAs.
+
+## Docker Image
+
+The published image is available through GitHub Container Registry:
+
+```text
+ghcr.io/sallyalhamdan/ai381-lab2
+```
+
+Images are tagged using the corresponding Git commit SHA.
+
+## Branch Protection
+
+The `main` branch is protected with the following requirements:
+
+- Pull requests are required before merging.
+- The `lint-and-test` status check must pass before merging.
+- Force pushes are disabled.
+- Branch deletion is disabled.
+
+## Repository
+
+[AI381-Lab2 – GitHub](https://github.com/sallyalhamdan/AI381-Lab2)
