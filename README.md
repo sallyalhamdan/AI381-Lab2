@@ -133,31 +133,23 @@ The published image is available through GitHub Container Registry:
 ghcr.io/sallyalhamdan/ai381-lab2
 ```
 
-**Published image tag (commit SHA):**
+### Latest Published Image
 
-```text
-935454809bb39c0f8c4af8dcb3947f312673d597
-```
+- **Image:** `ghcr.io/sallyalhamdan/ai381-lab2`
+- **Tag:** `d51d23c4b80f3f96831f3dbf5c85659473c80d73`
+- **Digest:** `sha256:bad1d5e6cf915cd10a8b466460b32a7b4ae9d367020fe2524b88a36eaaf08ecc`
 
-**Image digest:**
-
-```text
-sha256:2ef3d736fc943584bef1e1fbaada82307de61b6dbacebf0a289715e1af9da51c
-```
-
-Pull the published image:
+Pull the latest published image:
 
 ```bash
-docker pull ghcr.io/sallyalhamdan/ai381-lab2:935454809bb39c0f8c4af8dcb3947f312673d597
+docker pull ghcr.io/sallyalhamdan/ai381-lab2:d51d23c4b80f3f96831f3dbf5c85659473c80d73
 ```
 
 Run the published image:
 
 ```bash
-docker run -d --name ai381-lab2-container -p 8000:8000 ghcr.io/sallyalhamdan/ai381-lab2:935454809bb39c0f8c4af8dcb3947f312673d597
+docker run -d --name ai381-lab2-container -p 8000:8000 ghcr.io/sallyalhamdan/ai381-lab2:d51d23c4b80f3f96831f3dbf5c85659473c80d73
 ```
-
-Images are tagged using the corresponding Git commit SHA.
 
 ## Branch Protection
 
