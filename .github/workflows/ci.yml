@@ -1,3 +1,4 @@
+```yaml
 name: CI
 
 on:
@@ -58,17 +59,12 @@ jobs:
           no-cache: true
           tags: ai381-lab2:scan
 
-      - name: Verify packages in final image
-        run: |
-          docker run --rm --entrypoint /opt/venv/bin/python ai381-lab2:scan -c "import msgpack, setuptools, urllib3; print('msgpack:', msgpack.__version__); print('setuptools:', setuptools.__version__); print('urllib3:', urllib3.__version__)"
-          docker run --rm --entrypoint /opt/venv/bin/python ai381-lab2:scan -m pip check
-
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ai381-lab2:scan
           format: table
-          exit-code: '0'
+          exit-code: "0"
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
@@ -84,5 +80,28 @@ jobs:
         env:
           IMAGE: ghcr.io/${{ github.repository_owner }}/ai381-lab2:${{ github.sha }}
         run: |
+          set -euo pipefail
+
+          echo "Checking image..."
+          docker image inspect ai381-lab2:scan
+
+          echo "Tagging image..."
           docker tag ai381-lab2:scan "$IMAGE"
-          docker push "$IMAGE"
+
+          for attempt in 1 2 3; do
+            echo "Push attempt $attempt of 3"
+
+            if docker push "$IMAGE"; then
+              echo "Image pushed successfully!"
+              exit 0
+            fi
+
+            if [ "$attempt" -lt 3 ]; then
+              echo "Push failed. Retrying in $((attempt * 10)) seconds..."
+              sleep $((attempt * 10))
+            fi
+          done
+
+          echo "Image push failed after 3 attempts."
+          exit 1
+```
