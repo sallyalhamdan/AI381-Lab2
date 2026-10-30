@@ -136,25 +136,25 @@ ghcr.io/sallyalhamdan/ai381-lab2
 **Published image tag (commit SHA):**
 
 ```text
-d91f2c9ac54da66905e6298422601c2f8baf391b
+935454809bb39c0f8c4af8dcb3947f312673d597
 ```
 
 **Image digest:**
 
 ```text
-sha256:8e8380d529ea6c6d791d947fc2c64321d29a01e989513b6d17c13f9dc75e6e4b
+sha256:2ef3d736fc943584bef1e1fbaada82307de61b6dbacebf0a289715e1af9da51c
 ```
 
 Pull the published image:
 
 ```bash
-docker pull ghcr.io/sallyalhamdan/ai381-lab2:d91f2c9ac54da66905e6298422601c2f8baf391b
+docker pull ghcr.io/sallyalhamdan/ai381-lab2:935454809bb39c0f8c4af8dcb3947f312673d597
 ```
 
 Run the published image:
 
 ```bash
-docker run -d --name ai381-lab2-container -p 8000:8000 ghcr.io/sallyalhamdan/ai381-lab2:d91f2c9ac54da66905e6298422601c2f8baf391b
+docker run -d --name ai381-lab2-container -p 8000:8000 ghcr.io/sallyalhamdan/ai381-lab2:935454809bb39c0f8c4af8dcb3947f312673d597
 ```
 
 Images are tagged using the corresponding Git commit SHA.
